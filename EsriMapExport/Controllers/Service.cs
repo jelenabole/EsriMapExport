@@ -18,14 +18,14 @@ namespace EsriMapExport.Controllers
 			client.MaxResponseContentBufferSize = 256000;
 		}
 
-        public async Task<MapExport> getMapExport()
+        public async Task<MapExport> getMapExport(double Xmin, double Ymin, double Xmax, double Ymax)
         {
             // link to map:
             string server = "https://gdiportal.gdi.net/server/rest/services/PGZ/PGZ_UI_QUERY_DATA/MapServer/export";
             string rest = "?";
 
             rest += "f=json";
-            rest += "&bbox=344245.2921116756,4999090.151073363,344698.726736262,4999225.360926013";
+            rest += "&bbox=" + Xmin + "," + Ymin + "," + Xmax + "," + Ymax;
 
             string uri = string.Format(server + rest);
 

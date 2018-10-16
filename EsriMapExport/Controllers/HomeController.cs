@@ -17,10 +17,20 @@ namespace EsriMapExport.Controllers
 
         async public void getMap()
         {
-            RestService restService = new RestService();
-            Map = await restService.getMapExport();
+            Service restService = new Service();
+
+            Extent Bounds = new Extent();
+            Bounds.Xmin = 344245.2921116756;
+            Bounds.Ymin = 4999090.151073363;
+            Bounds.Xmax = 344698.726736262;
+            Bounds.Ymax = 4999225.360926013;
+            
+            Map = await restService.getMapExport(Bounds.Xmin, Bounds.Ymin,
+               Bounds.Xmax, Bounds.Ymax);
 
             Trace.WriteLine(Map.Height);
+            Trace.WriteLine(Map.Width);
+            Trace.WriteLine(Map.Href);
         }
 
 
