@@ -1,14 +1,16 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using EsriMapExport.Models;
+using EsriMapExport.Forms;
 using System;
+using System.Collections.Generic;
 
 namespace EsriMapExport.Controllers
 {
     public class HomeController : Controller
     {
 
-        MapExport Map;
+        MapExport ExportedMap;
 
         public HomeController()
         {
@@ -19,18 +21,29 @@ namespace EsriMapExport.Controllers
         {
             Service restService = new Service();
 
-            Extent Bounds = new Extent();
-            Bounds.Xmin = 344245.2921116756;
-            Bounds.Ymin = 4999090.151073363;
-            Bounds.Xmax = 344698.726736262;
-            Bounds.Ymax = 4999225.360926013;
-            
-            Map = await restService.getMapExport(Bounds.Xmin, Bounds.Ymin,
-               Bounds.Xmax, Bounds.Ymax);
+            MapForm MapForm = new MapForm
+            {
+                Xmin = 344245.2921116756,
+                Ymin = 4999090.151073363,
+                Xmax = 344698.726736262,
+                Ymax = 4999225.360926013,
 
-            Trace.WriteLine(Map.Height);
-            Trace.WriteLine(Map.Width);
-            Trace.WriteLine(Map.Href);
+                // cm to inches (96 dpi) = inches of paper
+                Width = 4096,
+                Height = 4096,
+
+                MapScale = 10000,
+                // Layers = { 0, 3}
+            };
+            
+            ExportedMap = await restService.getMapExport(MapForm);
+
+            Trace.WriteLine(ExportedMap.Height);
+            Trace.WriteLine(ExportedMap.Width);
+            Trace.WriteLine(ExportedMap.Href);
+
+            // save image:
+            await DownloadService.DownloadImage(new Uri(ExportedMap.Href), "image.png");
         }
 
 
