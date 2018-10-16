@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace EsriMapExport.Controllers
 {
-	class Service
+	class MapService
 	{
 		HttpClient client;
-		public Service()
+		public MapService()
 		{
 			client = new HttpClient();
 			client.MaxResponseContentBufferSize = 256000;
@@ -57,7 +57,7 @@ namespace EsriMapExport.Controllers
             string rest = "?";
 
             rest += "f=json";
-            // extent (bounding box) 
+            // extent (bounding box) = unless bboxSR is specified, bbox is assumed to be in the spatial reference of the map
             rest += "&bbox=" + MapForm.Xmin.ToString(CultureInfo.InvariantCulture) + "," 
                 + MapForm.Ymin.ToString(CultureInfo.InvariantCulture) + "," 
                 + MapForm.Xmax.ToString(CultureInfo.InvariantCulture) + ","
@@ -70,6 +70,7 @@ namespace EsriMapExport.Controllers
             // image size (400x400):
             if (MapForm.Width != null && MapForm.Height != null)
                 rest += "&size=" + MapForm.Width + "," + MapForm.Height;
+            // TODO - size of the paper
            
             // map scale = centered around bbox:
             if (MapForm.MapScale != null)

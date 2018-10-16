@@ -19,7 +19,7 @@ namespace EsriMapExport.Controllers
 
         async public void getMap()
         {
-            Service restService = new Service();
+            MapService restService = new MapService();
 
             MapForm MapForm = new MapForm
             {
