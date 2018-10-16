@@ -31,8 +31,9 @@ namespace EsriMapExport.Controllers
                 // cm to inches (96 dpi) = inches of paper
                 Width = 4096,
                 Height = 4096,
-
                 MapScale = 10000,
+
+                Format = "png",
                 // Layers = { 0, 3}
             };
             
@@ -43,7 +44,9 @@ namespace EsriMapExport.Controllers
             Trace.WriteLine(ExportedMap.Href);
 
             // save image:
-            await DownloadService.DownloadImage(new Uri(ExportedMap.Href), "image.png");
+            if (MapForm.Format == null)
+                MapForm.Format = "png";
+            await DownloadService.DownloadImage(new Uri(ExportedMap.Href), "image." + MapForm.Format);
         }
 
 

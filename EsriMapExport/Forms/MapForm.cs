@@ -2,7 +2,6 @@ using System.Collections.Generic;
 
 namespace EsriMapExport.Forms
 {
-    
 
     public class MapForm
     {
@@ -11,21 +10,25 @@ namespace EsriMapExport.Forms
             List<int> Layers = new List<int>();
         }
 
-        // extent:
+        // additional info:
+        public string Format { get; set; }
+
+        // extent (bbox):
         public double Xmin { get; set; }
         public double Ymin { get; set; }
         public double Xmax { get; set; }
         public double Ymax { get; set; }
 
-        public int Width { get; set; }
-        public int Height { get; set; }
+        // map size:
+        public int? Width { get; set; }
+        public int? Height { get; set; }
 
-        // layer IDs
+        // map scale:
+        public int? MapScale { get; set; }
+
+        // layer IDs and definitions:
         public List<int> Layers { get; set; }
         public LayerDefinition layerDefinition { get; set; }
-
-        // map scale: 5 000 000 ili 5E6
-        public int MapScale { get; set; }
     }
 
     // feature layer

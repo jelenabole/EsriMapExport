@@ -63,6 +63,18 @@ namespace EsriMapExport.Controllers
                 + MapForm.Xmax.ToString(CultureInfo.InvariantCulture) + ","
                 + MapForm.Ymax.ToString(CultureInfo.InvariantCulture);
 
+            // image format: (Default ??)
+            MapForm.Format = MapForm.Format == null ? "png" : MapForm.Format;
+            rest += "&format=" + MapForm.Format;
+
+            // image size (400x400):
+            if (MapForm.Width != null && MapForm.Height != null)
+                rest += "&size=" + MapForm.Width + "," + MapForm.Height;
+           
+            // map scale = centered around bbox:
+            if (MapForm.MapScale != null)
+                rest += "&mapScale=" + MapForm.MapScale;
+
             Trace.WriteLine(rest);
             string uri = string.Format(server + rest);
 
