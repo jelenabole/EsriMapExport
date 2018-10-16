@@ -75,6 +75,19 @@ namespace EsriMapExport.Controllers
             if (MapForm.MapScale != null)
                 rest += "&mapScale=" + MapForm.MapScale;
 
+            // show specific layers - by IDs:
+            if (MapForm.Layers != null && MapForm.Layers.Count > 0)
+            {
+                rest += "&layers=show:";
+                int size = MapForm.Layers.Count;
+                for (int i = 0; i < size; i++)
+                {
+                    rest += MapForm.Layers[i];
+                    if (i < size - 1)
+                        rest += ",";
+                }
+            }
+
             Trace.WriteLine(rest);
             string uri = string.Format(server + rest);
 
@@ -96,7 +109,5 @@ namespace EsriMapExport.Controllers
             }
             return Item;
         }
-
     }
-
 }

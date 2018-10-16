@@ -19,11 +19,9 @@ namespace EsriMapExport.Forms
         public double Xmax { get; set; }
         public double Ymax { get; set; }
 
-        // map size:
+        // map size and scale:
         public int? Width { get; set; }
         public int? Height { get; set; }
-
-        // map scale:
         public int? MapScale { get; set; }
 
         // layer IDs and definitions:

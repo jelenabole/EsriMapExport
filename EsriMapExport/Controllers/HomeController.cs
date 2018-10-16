@@ -34,8 +34,11 @@ namespace EsriMapExport.Controllers
                 MapScale = 10000,
 
                 Format = "png",
-                // Layers = { 0, 3}
             };
+
+            MapForm.Layers = new List<int>();
+            MapForm.Layers.Add(0);
+            MapForm.Layers.Add(3);
             
             ExportedMap = await restService.getMapExport(MapForm);
 
