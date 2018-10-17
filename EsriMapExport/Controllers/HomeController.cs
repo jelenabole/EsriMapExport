@@ -5,6 +5,7 @@ using EsriMapExport.Forms;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EsriMapExport.Services;
 
 namespace EsriMapExport.Controllers
 {
@@ -27,32 +28,7 @@ namespace EsriMapExport.Controllers
 
             SaveImage(MapExport, "image", MapForm.Format);
         }
-
-        private MapForm CreateMapObject()
-        {
-            MapForm Map = new MapForm
-            {
-                Xmin = 344245.2921116756,
-                Ymin = 4999090.151073363,
-                Xmax = 344698.726736262,
-                Ymax = 4999225.360926013,
-
-                // cm to inches (96 dpi) = inches of paper
-                Width = 4096,
-                Height = 4096,
-                MapScale = 10000,
-
-                Format = "png",
-            };
-
-            Map.Layers = new List<int>();
-            Map.Layers.Add(0);
-            Map.Layers.Add(3);
-
-            return Map;
-        }
-
-
+        
         async private Task<MapExport> GetMap(MapForm mapForm)
         {
             // get map data from server:
@@ -67,6 +43,44 @@ namespace EsriMapExport.Controllers
             if (format == null)
                 format = "png";
             await DownloadService.DownloadImage(new Uri(mapExport.Href), filename + "." + format);
+        }
+
+        private MapForm CreateMapObject()
+        {
+            MapForm Map = new MapForm
+            {
+                Xmin = 344245.2921116756,
+                Ymin = 4999090.151073363,
+                Xmax = 344698.726736262,
+                Ymax = 4999225.360926013,
+
+                // cm to inches (96 dpi) = inches of paper
+                MapScale = 10000,
+
+                Format = "png",
+            };
+
+            SetSize(Map);
+
+            Map.Layers = new List<int>();
+            Map.Layers.Add(0);
+            Map.Layers.Add(3);
+
+            return Map;
+        }
+
+        private void SetSize(MapForm map)
+        {
+            // get the dpi (image = 96, vector = 300): 
+            Decimal dpi = 96;
+
+            // paper size in inches (without margins):
+            Decimal paperWidth = 8.27M;
+            Decimal paperHeight = 11.69M;
+
+
+            map.Width = (int) Math.Round(dpi * paperWidth);
+            map.Height = (int) Math.Round(dpi * paperHeight);
         }
 
 
