@@ -4,6 +4,7 @@ using EsriMapExport.Models;
 using EsriMapExport.Forms;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EsriMapExport.Controllers
 {
@@ -14,12 +15,20 @@ namespace EsriMapExport.Controllers
 
         public HomeController()
         {
-            MapForm MapForm = createMapObject();
-
-            getMap(MapForm);
+            Start();
         }
 
-        private MapForm createMapObject()
+        // async method
+        async private void Start()
+        {
+            MapForm MapForm = CreateMapObject();
+
+            MapExport MapExport = await GetMap(MapForm);
+
+            SaveImage(MapExport, "image", MapForm.Format);
+        }
+
+        private MapForm CreateMapObject()
         {
             MapForm Map = new MapForm
             {
@@ -44,21 +53,22 @@ namespace EsriMapExport.Controllers
         }
 
 
-        async public void getMap(MapForm MapForm)
+        async private Task<MapExport> GetMap(MapForm mapForm)
         {
             // get map data from server:
             MapService restService = new MapService();
-            ExportedMap = await restService.getMapExport(MapForm);
+            ExportedMap = await restService.GetMapExport(mapForm);
 
-            Trace.WriteLine(ExportedMap.Height);
-            Trace.WriteLine(ExportedMap.Width);
-            Trace.WriteLine(ExportedMap.Href);
-
-            // save image:
-            if (MapForm.Format == null)
-                MapForm.Format = "png";
-            await DownloadService.DownloadImage(new Uri(ExportedMap.Href), "image." + MapForm.Format);
+            return ExportedMap;
         }
+
+        async private void SaveImage(MapExport mapExport, String filename, String format)
+        {
+            if (format == null)
+                format = "png";
+            await DownloadService.DownloadImage(new Uri(mapExport.Href), filename + "." + format);
+        }
+
 
 
         public IActionResult Index()

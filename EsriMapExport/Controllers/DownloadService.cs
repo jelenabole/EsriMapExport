@@ -1,28 +1,12 @@
-﻿using EsriMapExport.Forms;
-using EsriMapExport.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EsriMapExport.Controllers
 {
     class DownloadService
     {
-        HttpClient client;
-
-        /*
-        public DownloadService()
-        {
-            client = new HttpClient();
-            client.MaxResponseContentBufferSize = 256000;
-        }
-        */
-
         public static async Task DownloadImage(Uri requestUri, string filename)
         {
             using (var client = new HttpClient())

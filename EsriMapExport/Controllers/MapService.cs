@@ -2,11 +2,9 @@
 using EsriMapExport.Models;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EsriMapExport.Controllers
@@ -14,25 +12,19 @@ namespace EsriMapExport.Controllers
 	class MapService
 	{
 		HttpClient client;
+
 		public MapService()
 		{
-			client = new HttpClient();
-			client.MaxResponseContentBufferSize = 256000;
-		}
+            client = new HttpClient
+            {
+                MaxResponseContentBufferSize = 256000
+            };
+        }
 
-        public async Task<MapExport> getMapExport(double Xmin, double Ymin, double Xmax, double Ymax)
+        public async Task<MapExport> GetMapExport(MapForm mapForm)
         {
-            // link to map:
-            string server = "https://gdiportal.gdi.net/server/rest/services/PGZ/PGZ_UI_QUERY_DATA/MapServer/export";
-            string rest = "?";
-
-            rest += "f=json";
-            rest += "&bbox=" + Xmin + "," + Ymin + "," + Xmax + "," + Ymax;
-
-            string uri = string.Format(server + rest);
-
-            var response = await client.GetAsync(uri);
-            var Item = new MapExport();
+            // create map link:
+            String uri = CreateUrl(mapForm);
 
             // json settings = ignore null fields:
             var jsonSettings = new JsonSerializerSettings
@@ -40,75 +32,60 @@ namespace EsriMapExport.Controllers
                 NullValueHandling = NullValueHandling.Ignore
             };
 
+            // get map data:
+            var response = await client.GetAsync(uri);
+            var Item = new MapExport();
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                // json content:
-                Trace.Write(content);
                 Item = JsonConvert.DeserializeObject<MapExport>(content, jsonSettings);
             }
             return Item;
         }
 
-        public async Task<MapExport> getMapExport(MapForm MapForm)
+        private String CreateUrl(MapForm mapForm)
         {
-            // link to map:
+            // link to server:
             string server = "https://gdiportal.gdi.net/server/rest/services/PGZ/PGZ_UI_QUERY_DATA/MapServer/export";
-            string rest = "?";
 
-            rest += "f=json";
-            // extent (bounding box) = unless bboxSR is specified, bbox is assumed to be in the spatial reference of the map
-            rest += "&bbox=" + MapForm.Xmin.ToString(CultureInfo.InvariantCulture) + "," 
-                + MapForm.Ymin.ToString(CultureInfo.InvariantCulture) + "," 
-                + MapForm.Xmax.ToString(CultureInfo.InvariantCulture) + ","
-                + MapForm.Ymax.ToString(CultureInfo.InvariantCulture);
+            // arguments:
+            string args = "?";
 
-            // image format: (Default ??)
-            MapForm.Format = MapForm.Format == null ? "png" : MapForm.Format;
-            rest += "&format=" + MapForm.Format;
+            // data format (html):
+            args += "f=json";
+
+            // extent (bounding box required):
+            args += "&bbox=" + mapForm.Xmin.ToString(CultureInfo.InvariantCulture) + ","
+                + mapForm.Ymin.ToString(CultureInfo.InvariantCulture) + ","
+                + mapForm.Xmax.ToString(CultureInfo.InvariantCulture) + ","
+                + mapForm.Ymax.ToString(CultureInfo.InvariantCulture);
+
+            // image format: (png)
+            mapForm.Format = mapForm.Format == null ? "png" : mapForm.Format;
+            args += "&format=" + mapForm.Format;
 
             // image size (400x400):
-            if (MapForm.Width != null && MapForm.Height != null)
-                rest += "&size=" + MapForm.Width + "," + MapForm.Height;
-            // TODO - size of the paper
-           
-            // map scale = centered around bbox:
-            if (MapForm.MapScale != null)
-                rest += "&mapScale=" + MapForm.MapScale;
+            if (mapForm.Width != null && mapForm.Height != null)
+                args += "&size=" + mapForm.Width + "," + mapForm.Height;
 
-            // show specific layers - by IDs:
-            if (MapForm.Layers != null && MapForm.Layers.Count > 0)
+            // map scale (??):
+            if (mapForm.MapScale != null)
+                args += "&mapScale=" + mapForm.MapScale;
+
+            // show specific layers (and all its sublayers) - by IDs:
+            if (mapForm.Layers != null && mapForm.Layers.Count > 0)
             {
-                rest += "&layers=show:";
-                int size = MapForm.Layers.Count;
+                args += "&layers=show:";
+                int size = mapForm.Layers.Count;
                 for (int i = 0; i < size; i++)
                 {
-                    rest += MapForm.Layers[i];
+                    args += mapForm.Layers[i];
                     if (i < size - 1)
-                        rest += ",";
+                        args += ",";
                 }
             }
 
-            Trace.WriteLine(rest);
-            string uri = string.Format(server + rest);
-
-            var response = await client.GetAsync(uri);
-            var Item = new MapExport();
-
-            // json settings = ignore null fields:
-            var jsonSettings = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            };
-
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                // json content:
-                Trace.Write(content);
-                Item = JsonConvert.DeserializeObject<MapExport>(content, jsonSettings);
-            }
-            return Item;
+            return string.Format(server + args);
         }
     }
 }
