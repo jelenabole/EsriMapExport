@@ -14,14 +14,14 @@ namespace EsriMapExport.Controllers
 
         public HomeController()
         {
-            getMap();
+            MapForm MapForm = createMapObject();
+
+            getMap(MapForm);
         }
 
-        async public void getMap()
+        private MapForm createMapObject()
         {
-            MapService restService = new MapService();
-
-            MapForm MapForm = new MapForm
+            MapForm Map = new MapForm
             {
                 Xmin = 344245.2921116756,
                 Ymin = 4999090.151073363,
@@ -36,10 +36,18 @@ namespace EsriMapExport.Controllers
                 Format = "png",
             };
 
-            MapForm.Layers = new List<int>();
-            MapForm.Layers.Add(0);
-            MapForm.Layers.Add(3);
-            
+            Map.Layers = new List<int>();
+            Map.Layers.Add(0);
+            Map.Layers.Add(3);
+
+            return Map;
+        }
+
+
+        async public void getMap(MapForm MapForm)
+        {
+            // get map data from server:
+            MapService restService = new MapService();
             ExportedMap = await restService.getMapExport(MapForm);
 
             Trace.WriteLine(ExportedMap.Height);
