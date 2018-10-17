@@ -13,7 +13,7 @@ namespace EsriMapExport.Services
             using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
             using (
                 Stream contentStream = await (await client.SendAsync(request)).Content.ReadAsStreamAsync(),
-                stream = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                stream = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory)
                     + "\\" + filename, FileMode.Create, FileAccess.Write, FileShare.None, 3145728, true))
             {
                 await contentStream.CopyToAsync(stream);

@@ -28,7 +28,7 @@ namespace EsriMapExport.Controllers
             // get map once (with defined layers):
             MapExport MapExport = await GetMap(MapForm);
             if (MapExport.Href != null)
-                SaveImage(MapExport, "image", MapForm.Format);
+                SaveImage(MapExport, "map_image", MapForm.Format);
         }
         
         async private Task<MapExport> GetMap(MapForm mapForm)
