@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace EsriMapExport.Forms
@@ -7,7 +8,8 @@ namespace EsriMapExport.Forms
     {
         public MapForm()
         {
-            List<int> Layers = new List<int>();
+            Layers = new List<int>();
+            LayerDefs = new List<LayerDefinition>();
         }
 
         // additional info:
@@ -26,13 +28,14 @@ namespace EsriMapExport.Forms
 
         // layer IDs and definitions:
         public List<int> Layers { get; set; }
-        public LayerDefinition layerDefinition { get; set; }
+        public List<LayerDefinition> LayerDefs { get; set; }
     }
 
     // feature layer
     public class LayerDefinition
     {
-        public int Id { get; set; }
+        public int? LayerId { get; set; }
+        public String Query { get; set; }
     }
 
 }

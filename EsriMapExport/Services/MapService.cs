@@ -72,6 +72,15 @@ namespace EsriMapExport.Services
             if (mapForm.MapScale != null)
                 args += "&mapScale=" + mapForm.MapScale;
 
+            args += AddLayersAndDefinitions(mapForm);
+
+            return server + args;
+        }
+
+        private String AddLayersAndDefinitions(MapForm mapForm)
+        {
+            string args = "";
+
             // show specific layers (and all its sublayers) - by IDs:
             if (mapForm.Layers != null && mapForm.Layers.Count > 0)
             {
@@ -85,7 +94,26 @@ namespace EsriMapExport.Services
                 }
             }
 
-            return string.Format(server + args);
+            // show by definitions:
+            if (mapForm.LayerDefs != null && mapForm.LayerDefs.Count > 0)
+            {
+                args += "&layerDefs=";
+                int size = mapForm.LayerDefs.Count;
+
+                for (int i = 0; i < size; i++)
+                {
+                    args += mapForm.LayerDefs[i].LayerId + ":";
+
+                    // replace special chars:
+                    string str = mapForm.LayerDefs[i].Query;
+                    str = str.Replace(" ", "+");
+                    str = str.Replace("\"", "%22");
+                    str = str.Replace(":", "%3A");
+                    args += str;
+                }
+            }
+
+            return args;
         }
     }
 }

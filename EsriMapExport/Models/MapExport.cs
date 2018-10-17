@@ -19,5 +19,4 @@ namespace EsriMapExport.Models
         public double Ymax { get; set; }
         // public SpatialReference SpatialReference { get; set; }
     }
-
 }
