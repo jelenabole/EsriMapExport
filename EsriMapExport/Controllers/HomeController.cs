@@ -29,6 +29,13 @@ namespace EsriMapExport.Controllers
             MapExport MapExport = await GetMap(MapForm);
             if (MapExport.Href != null)
                 SaveImage(MapExport, "map_image", MapForm.Format);
+
+            QueryService queryService = new QueryService();
+            QueryForm queryForm = new QueryForm()
+            {
+                ParticleNumbers = { "1012/17", "1012/15" }
+            };
+            Query query = await queryService.GetMapQuery(queryForm);
         }
         
         async private Task<MapExport> GetMap(MapForm mapForm)
