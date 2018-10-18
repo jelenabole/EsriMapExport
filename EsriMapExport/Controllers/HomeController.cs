@@ -22,22 +22,21 @@ namespace EsriMapExport.Controllers
         // async method
         async private void Start()
         {
-            MapForm MapForm = CreateMapObject();
+            // create object, set values
+            MapForm mapForm = Utils.CreateMapObject();
+            Utils.SetPaperSize(mapForm);
+            Utils.SetLayerDefsShowOneOnMap(mapForm);
 
-
-            // get map once (with defined layers):
-            MapExport MapExport = await GetMap(MapForm);
-            if (MapExport.Href != null)
-                SaveImage(MapExport, "map_image", MapForm.Format);
-
-            QueryService queryService = new QueryService();
-            QueryForm queryForm = new QueryForm()
-            {
-                ParticleNumbers = { "1012/17", "1012/15" }
-            };
-            Query query = await queryService.GetMapQuery(queryForm);
+            SaveMap(mapForm);
         }
-        
+
+        async private void SaveMap(MapForm mapForm)
+        {
+            MapExport MapExport = await GetMap(mapForm);
+            if (MapExport.Href != null)
+                SaveImage(MapExport, "map_image", mapForm.Format);
+        }
+
         async private Task<MapExport> GetMap(MapForm mapForm)
         {
             // get map data from server:
@@ -54,70 +53,13 @@ namespace EsriMapExport.Controllers
             await DownloadService.DownloadImage(new Uri(mapExport.Href), filename + "." + format);
         }
 
-        private MapForm CreateMapObject()
-        {
-            MapForm mapForm = new MapForm
-            {
-                Xmin = 344245.2921116756,
-                Ymin = 4999090.151073363,
-                Xmax = 344698.726736262,
-                Ymax = 4999225.360926013,
-
-                MapScale = 1000,
-                Format = "png",
-
-                // Layers = { 3 },
-            };
-
-            SetSize(mapForm);
-
-            return mapForm;
-        }
-
-        private void SetSize(MapForm map)
-        {
-            // get the dpi (image = 96, vector = 300): 
-            Decimal dpi = 96;
-
-            // paper size in inches (without margins):
-            Decimal paperWidth = 8.27M;
-            Decimal paperHeight = 11.69M;
 
 
-            map.Width = (int) Math.Round(dpi * paperWidth);
-            map.Height = (int) Math.Round(dpi * paperHeight);
-        }
-
-
+        /* REST - functions to delete */
 
         public IActionResult Index()
         {
             return View();
-        }
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
