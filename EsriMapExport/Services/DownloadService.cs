@@ -1,4 +1,6 @@
-﻿using System;
+﻿using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -18,6 +20,32 @@ namespace EsriMapExport.Services
             {
                 await contentStream.CopyToAsync(stream);
             }
+            
+        }
+
+        public static async Task DownloadPDF(string filename)
+        {
+            Document pdfDoc = new Document();
+            PdfWriter writer = PdfWriter.GetInstance(pdfDoc, new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + "\\" + "pdf.pdf", FileMode.Create));
+
+            pdfDoc.Open();
+            pdfDoc.Add(new Paragraph("Some data"));
+            pdfDoc.Add(new Paragraph("Bla bla bla"));
+
+            PdfContentByte cb = writer.DirectContent;
+            cb.MoveTo(pdfDoc.PageSize.Width / 2, pdfDoc.PageSize.Height / 2);
+            cb.LineTo(pdfDoc.PageSize.Width / 2, pdfDoc.PageSize.Height);
+            cb.Stroke();
+            pdfDoc.NewPage();
+            var image = Image.GetInstance(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + "\\" + filename);
+            image.SetAbsolutePosition(1, 1);
+
+            cb.AddImage(image);
+
+
+            pdfDoc.Close();
         }
     }
 }
