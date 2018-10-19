@@ -109,6 +109,7 @@ namespace EsriMapExport.Services
                     str = str.Replace(" ", "+");
                     str = str.Replace("\"", "%22");
                     str = str.Replace(":", "%3A");
+                    str = str.Replace("'", "%27");
                     args += str;
                 }
             }
