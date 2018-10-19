@@ -3,56 +3,66 @@ using Microsoft.AspNetCore.Mvc;
 using EsriMapExport.Models;
 using EsriMapExport.Forms;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EsriMapExport.Services;
+using Newtonsoft.Json;
+using System.IO;
+using EsriMapExport.Inputs;
+using EsriMapExport.TestUtils;
 
 namespace EsriMapExport.Controllers
 {
     public class HomeController : Controller
     {
 
-        MapExport ExportedMap;
-
         public HomeController()
         {
-            Start();
+            StartWithJsonFile();
         }
 
         // async method
-        async private void Start()
+        async private void StartWithJsonFile()
         {
-            // create object, set values
-            MapForm mapForm = Utils.CreateMapObject();
-            Utils.SetPaperSize(mapForm);
-            Utils.SetLayerDefsShowOneOnMap(mapForm);
+            MapDataInput mapData = DeserializeJsonFile();
 
-            SaveMap(mapForm);
+            // create map object to export - borders, layers:
+            MapForm mapForm = getDataToForm(mapData);
+
+            // set paper size (with padding or scale):
+            CalcUtils.SetPaperSize(mapForm);
+
+            TestStart.SaveMap(mapForm);
         }
 
-        async private void SaveMap(MapForm mapForm)
+
+        private MapForm getDataToForm(MapDataInput mapData)
         {
-            MapExport MapExport = await GetMap(mapForm);
-            if (MapExport.Href != null)
-                SaveImage(MapExport, "map_image", mapForm.Format);
+            // get borders from geometry:
+            Extent borders = CalcUtils.FindPoints(mapData.SpatialConditionList);
+
+            // create map object to export - borders, layers:
+            MapForm mapForm = new MapForm
+            {
+                Xmin = borders.Xmin,
+                Xmax = borders.Xmax,
+                Ymin = borders.Ymin,
+                Ymax = borders.Ymax,
+            };
+
+            return mapForm;
         }
 
-        async private Task<MapExport> GetMap(MapForm mapForm)
+        private static MapDataInput DeserializeJsonFile()
         {
-            // get map data from server:
-            MapService restService = new MapService();
-            ExportedMap = await restService.GetMapExport(mapForm);
+            // stream from a file:
+            var serializer = new JsonSerializer();
+            string str = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+                    + "\\" + "copy.json";
 
-            return ExportedMap;
+            using (var sr = new StreamReader(str))
+            using (var jsonTextReader = new JsonTextReader(sr))
+            {
+                return (MapDataInput)serializer.Deserialize(sr, typeof(MapDataInput));
+            }
         }
-
-        async private void SaveImage(MapExport mapExport, String filename, string format = "png")
-        {
-            if (format == null)
-                format = "png";
-            await DownloadService.DownloadImage(new Uri(mapExport.Href), filename + "." + format);
-        }
-
 
 
         /* REST - functions to delete */
