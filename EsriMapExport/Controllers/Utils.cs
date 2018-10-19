@@ -81,7 +81,6 @@ namespace EsriMapExport.Controllers
             };
         }
 
-
         public static Extent FindPoints(List<Features> features)
         {
             Extent borders = new Extent
@@ -113,6 +112,20 @@ namespace EsriMapExport.Controllers
             }
 
             return borders;
+        }
+
+        public static void SetMapPadding(MapForm mapForm)
+        {
+            double width = mapForm.Xmax - mapForm.Xmin;
+            double height = mapForm.Ymax - mapForm.Ymin;
+
+            double widthPadding = width / 2;
+            double heightPadding = height / 2;
+
+            mapForm.Xmax += widthPadding;
+            mapForm.Xmin -= widthPadding;
+            mapForm.Ymax += heightPadding;
+            mapForm.Ymin -= heightPadding;
         }
 
     }
