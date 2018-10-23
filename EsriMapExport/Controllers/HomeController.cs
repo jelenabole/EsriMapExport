@@ -6,7 +6,12 @@ using System;
 using Newtonsoft.Json;
 using System.IO;
 using EsriMapExport.Inputs;
-using EsriMapExport.TestUtils;
+using EsriMapExport.Services;
+using EsriMapExport.Adds;
+using System.Globalization;
+using System.Collections.Generic;
+using static EsriMapExport.Inputs.UrbanisticPlansResults;
+using System.Threading.Tasks;
 
 namespace EsriMapExport.Controllers
 {
@@ -15,39 +20,13 @@ namespace EsriMapExport.Controllers
 
         public HomeController()
         {
-            StartWithJsonFile();
+            MapDataInput mapData = DeserializeJsonFile();
         }
 
         // async method
         async private void StartWithJsonFile()
         {
             MapDataInput mapData = DeserializeJsonFile();
-
-            // create map object to export - borders, layers:
-            MapForm mapForm = getDataToForm(mapData);
-
-            // set paper size (with padding or scale):
-            CalcUtils.SetPaperSize(mapForm);
-
-            TestStart.SaveMap(mapForm);
-        }
-
-
-        private MapForm getDataToForm(MapDataInput mapData)
-        {
-            // get borders from geometry:
-            Extent borders = CalcUtils.FindPoints(mapData.SpatialConditionList);
-
-            // create map object to export - borders, layers:
-            MapForm mapForm = new MapForm
-            {
-                Xmin = borders.Xmin,
-                Xmax = borders.Xmax,
-                Ymin = borders.Ymin,
-                Ymax = borders.Ymax,
-            };
-
-            return mapForm;
         }
 
         private static MapDataInput DeserializeJsonFile()

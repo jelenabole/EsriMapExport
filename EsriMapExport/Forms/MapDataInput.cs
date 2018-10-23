@@ -26,6 +26,7 @@ namespace EsriMapExport.Inputs
         public string Description;
         public Geometry Geometry;
     }
+
     public class Geometry
     {
         public List<List<List<double>>> Rings { get; set; }
@@ -40,21 +41,20 @@ namespace EsriMapExport.Inputs
         public string GisCode;
         public string Name;
 
-        // linkovi:
-        public string Sn; // pdf
-        public string polygonRestURL;
-        public string rasterRestURL;
-        public string legenRestURL;
-        public string componentRestURL;
+        // urls:
+        public string Sn;
+        public string PolygonRestURL;
+        public string RasterRestURL;
+        public string LegenRestURL;
+        public string ComponentRestURL;
 
         public List<PlanMap> PlanMaps;
 
         public class PlanMap
         {
-            // id with ".."
             public string Id { get; set; }
             public string Name { get; set; }
-            public int Scale { get; set; }
+            public int MapScale { get; set; }
             public int? OriginalScale { get; set; }
         }
     }
